@@ -1,0 +1,12 @@
+[
+    {
+        "URL": "https://www.youtube.com/watch?v=bMFiM7mcp7k",
+        "timestamps": { "start": "00:01:00", "end": "00:01:15" },
+        "downloadedVideoFilePath": null
+    },
+    {
+        "URL": "https://www.youtube.com/watch?v=bMFiM7mcp7k",
+        "timestamps": { "start": "00:00:30", "end": "00:00:45" },
+        "downloadedVideoFilePath": null
+    }
+]

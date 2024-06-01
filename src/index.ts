@@ -1,32 +1,18 @@
 import { YtdlCoreDownloader } from './Downloader/YtdlCoreDownloader'; 
 import { IVideoSegment } from './utils/IVideoSegment';
-import path, { resolve } from 'path';
+import path from 'path';
 import { createDirectory, getFormattedDate } from './utils/functions';
 import { FfmpegVideoProcessor } from './VideoProcessor/FfmpegVideoProcessor'
-
-var input: IVideoSegment[] = [
-    {
-        URL: "https://www.youtube.com/watch?v=bMFiM7mcp7k",
-        timestamps: { start: "00:01:00", end: "00:01:15" },
-        downloadedVideoFilePath: null
-    },
-    // {
-    //     URL: "https://www.youtube.com/watch?v=IG_pIvGW4qE",
-    //     timestamps: { start: "00:01:00", end: "00:01:15" },
-    //     downloadedVideoFilePath: null
-    // },
-    {
-        URL: "https://www.youtube.com/watch?v=bMFiM7mcp7k",
-        timestamps: { start: "00:00:30", end: "00:00:45" },
-        downloadedVideoFilePath: null
-    }
-];
+import fs from 'fs';
 
 // Main processing function
 async function processVideos(baseDir?: string): Promise<void> {
     return new Promise(async (resolve, reject) => {
         try {
 
+            const inputStr = fs.readFileSync('./input.json', 'utf-8');
+            var input = JSON.parse(inputStr);
+            
             const BASE_DIR:string = baseDir ? baseDir 
                 : path.join('.', 'outputs', getFormattedDate(), Date.now().toString());
             console.log("BaseDir = " + BASE_DIR);
