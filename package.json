@@ -5,5 +5,18 @@
     "ffprobe-static": "^3.1.0",
     "fluent-ffmpeg": "^2.0.0",
     "ytdl-core": "^4.11.5"
+  },
+  "devDependencies": {
+    "@types/ffmpeg": "^1.0.7",
+    "@types/ffprobe-static": "^2.0.3",
+    "@types/fluent-ffmpeg": "^2.1.24",
+    "@types/node": "^20.12.12",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev src/index.ts"
   }
 }

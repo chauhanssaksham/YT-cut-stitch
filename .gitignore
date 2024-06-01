@@ -3,3 +3,5 @@ node_modules
 outputs
 package-lock.json
 .DS_Store
+dist
+temp
