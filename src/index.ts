@@ -4,14 +4,14 @@ import path from 'path';
 import { createDirectory, getFormattedDate } from './utils/functions';
 import { FfmpegVideoProcessor } from './VideoProcessor/FfmpegVideoProcessor'
 import fs from 'fs';
+import { IVideoProcessorInput } from './VideoProcessor/types';
 
 // Main processing function
 async function processVideos(baseDir?: string): Promise<void> {
     return new Promise(async (resolve, reject) => {
         try {
-
             const inputStr = fs.readFileSync('./input.json', 'utf-8');
-            var input = JSON.parse(inputStr);
+            var input: IVideoSegment[] = JSON.parse(inputStr);
             
             const BASE_DIR:string = baseDir ? baseDir 
                 : path.join('.', 'outputs', getFormattedDate(), Date.now().toString());
@@ -22,14 +22,22 @@ async function processVideos(baseDir?: string): Promise<void> {
             createDirectory(DOWNLOADS_DIR);
             createDirectory(PROCESSING_DIR);
 
-            const downloader = new YtdlCoreDownloader(BASE_DIR);
+            const downloader = new YtdlCoreDownloader(DOWNLOADS_DIR);
             // Download all videos
-            input = await downloader.downloadAllVideos(input);
+            const urlSet: {[key:string]: string | null} = {};
+            input.forEach((input, i) => {
+                if (urlSet[input.URL] == null) {urlSet[input.URL] = null}
+            })
+            const downloadRes = await downloader.downloadAllVideos(Object.keys(urlSet));
+            downloadRes.forEach(res => urlSet[res.inputUrl] = res.outputFullPath);
+            input.forEach(input => input.downloadedVideoFilePath = (urlSet[input.URL] as string));
+            
             console.log(`Downloaded all videos`);
 
-            const processor = new FfmpegVideoProcessor(BASE_DIR);
+            const processor = new FfmpegVideoProcessor(PROCESSING_DIR);
             // Stitch videos together
-            await processor.stitchVideos(input);
+            var processorInput:IVideoProcessorInput[] = input.map(x => ({videoPath: x.downloadedVideoFilePath, timestamps: x.timestamps}))
+            await processor.stitchVideos(processorInput);
             console.log(`Stitched successfully in ${BASE_DIR}`);
             resolve();
         } catch (e){

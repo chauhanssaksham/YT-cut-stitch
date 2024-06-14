@@ -4,5 +4,5 @@ export interface IVideoSegment{
         start: string,
         end: string
     },
-    downloadedVideoFilePath: string | null // "xyz/downloads/myRNcpS.mp4",
+    downloadedVideoFilePath: string // "xyz/downloads/myRNcpS.mp4",
 }

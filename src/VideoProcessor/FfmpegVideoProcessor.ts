@@ -1,20 +1,18 @@
 import ffmpeg from 'fluent-ffmpeg';
 import pathToFfmpeg from 'ffmpeg-static';
 import ffprobe from 'ffprobe-static';
-import {IVideoProcessor} from './IVideoProcessor'
 import path from 'path'
 import { IVideoSegment } from 'src/utils/IVideoSegment';
+import { IVideoProcessor, IVideoProcessorInput } from './types';
 
 export class FfmpegVideoProcessor implements IVideoProcessor {
-    private baseOutputDir: string;
     private processingOutputDir: string;
 
-    constructor(baseOutputDir: string){
-        this.baseOutputDir = baseOutputDir;
-        this.processingOutputDir = path.join(baseOutputDir, "processing");
+    constructor(processingOutputDir: string){
+        this.processingOutputDir = processingOutputDir;
     }
 
-    public async stitchVideos(inputVideoSegments: IVideoSegment[]): Promise<void> {
+    public async stitchVideos(inputVideoSegments: IVideoProcessorInput[]): Promise<void> {
         return new Promise(async (resolve, reject) => {
             try {
                 // Process video segments in parallel
@@ -38,7 +36,7 @@ export class FfmpegVideoProcessor implements IVideoProcessor {
                         filter: 'volume',  
                         options: '1.3'  // Multiplies the volume by 1.4    
                     })
-                    .mergeToFile(path.join(this.baseOutputDir, "final.mp4"), "temp")
+                    .mergeToFile(path.join(this.processingOutputDir, "final.mp4"), "temp")
                     // .withVideoCodec('libx264')
                     // .withAudioCodec('aac')
                     .on('end', res => {
@@ -54,9 +52,9 @@ export class FfmpegVideoProcessor implements IVideoProcessor {
     }
 
     // **Function to process a single video segment**
-    private async cutSegment(videoSegment: IVideoSegment, i: number): Promise<any> {
+    private async cutSegment(videoSegment: IVideoProcessorInput, i: number): Promise<any> {
         return new Promise((resolve, reject) => {
-            ffmpeg(videoSegment.downloadedVideoFilePath as string)
+            ffmpeg(videoSegment.videoPath)
                 .setFfmpegPath(pathToFfmpeg as string)
                 .setFfprobePath(ffprobe.path)
                 .setStartTime(videoSegment.timestamps.start)
